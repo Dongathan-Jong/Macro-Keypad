@@ -15,12 +15,6 @@
 #define BUTTON_PIN6 7
 
 ClickEncoder *encoder; 
-ClickEncoder *one; 
-ClickEncoder *two; 
-ClickEncoder *three; 
-ClickEncoder *four; 
-ClickEncoder *five; 
-ClickEncoder *six; 
 
 int16_t last, value;
 
@@ -31,14 +25,17 @@ void timerIsr() {
 void setup() {
   Serial.begin(9600); 
   Consumer.begin(); 
-  encoder = new ClickEncoder(ENCODER_DT, ENCODER_CLK, BUTTON_PIN1); 
-  one = new ClickEncoder(ENCODER_DT, ENCODER_CLK, BUTTON_PIN2); 
-  two = new ClickEncoder(ENCODER_DT, ENCODER_CLK, BUTTON_PIN3); 
-  three = new ClickEncoder(ENCODER_DT, ENCODER_CLK, BUTTON_PIN4); 
-  four = new ClickEncoder(ENCODER_DT, ENCODER_CLK, BUTTON_PIN5); 
-  five = new ClickEncoder(ENCODER_DT, ENCODER_CLK, BUTTON_PIN6); 
-  six = new ClickEncoder(ENCODER_DT, ENCODER_CLK, BUTTON_PIN7); 
-
+  encoder = new ClickEncoder(ENCODER_DT, ENCODER_CLK, ENCODER_SW); 
+  pinMode(BUTTON_PIN1, INPUT_PULLUP);
+  pinMode(BUTTON_PIN2, INPUT_PULLUP);
+  pinMode(BUTTON_PIN3, INPUT_PULLUP);
+  pinMode(BUTTON_PIN4, INPUT_PULLUP);
+  pinMode(BUTTON_PIN5, INPUT_PULLUP);
+  pinMode(BUTTON_PIN6, INPUT_PULLUP);
+  
+  Timer1.initialize(1000); 
+  Timer1.attachInterrupt(timerIsr); 
+  last = -1;
 } 
 
 void loop() {  
@@ -55,71 +52,41 @@ void loop() {
     Serial.println(value);
   }
 
-  ClickEncoder::Button c = one->getButton(); 
-  if (d != ClickEncoder::Open) { 
-    switch (e) {
-      case ClickEncoder::Clicked: 
-        Consumer.write(MEDIA_PLAY_PAUSE); 
-      break;      
-      
-      case ClickEncoder::DoubleClicked: 
-         Consumer.write(MEDIA_NEXT); 
-      break;      
-    }
-  }
-
-    ClickEncoder::Button b = two->getButton(); 
+  //main encoder
+  ClickEncoder::Button b = encoder->getButton(); 
   if (b != ClickEncoder::Open) { 
+Serial.print("Button: "); 
+    #define VERBOSECASE(label) case label: Serial.println(#label); break;
     switch (b) {
       case ClickEncoder::Clicked: 
-        Consumer.write(MEDIA_PLAY_PAUSE); 
+        Consumer.write(CONSUMER_SLEEP); 
       break;      
       
       case ClickEncoder::DoubleClicked: 
-         Consumer.write(MEDIA_NEXT); 
+         Consumer.write(CONSUMER_SLEEP); 
       break;      
     }
   }
 
-    ClickEncoder::Button b = three->getButton(); 
-  if (b != ClickEncoder::Open) { 
-    switch (b) {
-      case ClickEncoder::Clicked: 
-        Consumer.write(MEDIA_PLAY_PAUSE); 
-      break;      
-      
-      case ClickEncoder::DoubleClicked: 
-         Consumer.write(MEDIA_NEXT); 
-      break;      
-    }
+  if(digitalRead(BUTTON_PIN1) == LOW)
+  {
+    Consumer.write(MEDIA_PREV); 
+    delay(200);
   }
 
-    ClickEncoder::Button b = tfour->getButton(); 
-  if (b != ClickEncoder::Open) { 
-    switch (b) {
-      case ClickEncoder::Clicked: 
-        Consumer.write(MEDIA_PLAY_PAUSE); 
-      break;      
-      
-      case ClickEncoder::DoubleClicked: 
-         Consumer.write(MEDIA_NEXT); 
-      break;      
-    }
+  if(digitalRead(BUTTON_PIN2) == LOW)
+  {
+    Consumer.write(CONSUMER_CALCULATOR); 
+    delay(200);
   }
 
-    ClickEncoder::Button b = five->getButton(); 
-  if (b != ClickEncoder::Open) { 
-    switch (b) {
-      case ClickEncoder::Clicked: 
-        Consumer.write(MEDIA_PLAY_PAUSE); 
-      break;      
-      
-      case ClickEncoder::DoubleClicked: 
-         Consumer.write(MEDIA_NEXT); 
-      break;      
-    }
+  if(digitalRead(BUTTON_PIN3) == LOW)
+  {
+    Consumer.write(MEDIA_VOLUME_MUTE); 
+    delay(200);
   }
 
+  
   delay(10); 
   
 }
