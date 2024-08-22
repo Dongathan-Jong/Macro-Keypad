@@ -7,12 +7,12 @@
 #define ENCODER_SW A2
 #define ENCODER_DT A1
 
-#define BUTTON_PIN1 2
-#define BUTTON_PIN2 3
-#define BUTTON_PIN3 4
-#define BUTTON_PIN4 5
-#define BUTTON_PIN5 6
-#define BUTTON_PIN6 7
+#define button1 2
+#define button2 3
+#define button3 4
+#define button4 5
+#define button5 6
+#define button6 7
 
 ClickEncoder *encoder; 
 
@@ -68,24 +68,71 @@ Serial.print("Button: ");
     }
   }
 
-  if(digitalRead(BUTTON_PIN1) == LOW)
+  ClickEncoder::Button b = one->getButton(); 
+  if (b != ClickEncoder::Open) { 
+Serial.print("Button: "); 
+    #define VERBOSECASE(label) case label: Serial.println(#label); break;
+    switch (b) {
+      case ClickEncoder::Clicked: 
+        Consumer.write(CONSUMER_SLEEP); 
+      break;      
+      
+      case ClickEncoder::DoubleClicked: 
+         Consumer.write(CONSUMER_SLEEP); 
+      break;      
+    }
+  }
+
+  ClickEncoder::Button b = two->getButton(); 
+  if (b != ClickEncoder::Open) { 
+Serial.print("Button: "); 
+    #define VERBOSECASE(label) case label: Serial.println(#label); break;
+    switch (b) {
+      case ClickEncoder::Clicked: 
+        Consumer.write(CONSUMER_SLEEP); 
+      break;      
+      
+      case ClickEncoder::DoubleClicked: 
+         Consumer.write(CONSUMER_SLEEP); 
+      break;      
+    }
+  }
+
+  if(digitalRead(button1) == LOW)
   {
     Consumer.write(MEDIA_PREV); 
     delay(200);
   }
 
-  if(digitalRead(BUTTON_PIN2) == LOW)
+  if(digitalRead(button2) == LOW)
   {
     Consumer.write(CONSUMER_CALCULATOR); 
     delay(200);
   }
 
-  if(digitalRead(BUTTON_PIN3) == LOW)
+  if(digitalRead(button3) == LOW)
   {
     Consumer.write(MEDIA_VOLUME_MUTE); 
     delay(200);
   }
 
+  if(digitalRead(button4) == LOW)
+  {
+    Consumer.write(MEDIA_PREV); 
+    delay(200);
+  }
+
+  if(digitalRead(button5) == LOW)
+  {
+    Consumer.write(MEDIA_PLAY_PAUSE); 
+    delay(200);
+  }
+
+  if(digitalRead(button6) == LOW)
+  {
+    Consumer.write(MEDIA_NEXT); 
+    delay(200);
+  }
   
   delay(10); 
   
